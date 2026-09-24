@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy 4th Mensive, Jeppy!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+      overflow-x: hidden;
+      position: relative;
+      padding: 20px 10px;
+    }
+
+    /* Floating Hearts Background Animation */
+    .bg-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .heart-bg {
+      position: absolute;
+      bottom: -100px;
+      color: rgba(255, 255, 255, 0.4);
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.3) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Passcode Container - iOS Style */
+    .passcode-container {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 35px;
+      padding: 35px 30px 40px;
+      width: 340px;
+      box-shadow: 0 20px 50px rgba(220, 50, 100, 0.25);
+      z-index: 10;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .passcode-container.shake {
+      animation: iosShake 0.4s ease-in-out;
+    }
+
+    @keyframes iosShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-12px); }
+      40%, 80% { transform: translateX(12px); }
+    }
+
+    .lock-icon {
+      font-size: 28px;
+      color: #fff;
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+    }
+
+    .title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.3rem;
+      color: #fff;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 8px rgba(180, 20, 80, 0.3);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 25px;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    /* iOS Passcode Dots */
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      background: transparent;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .dot.filled {
+      background: #fff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      transform: scale(1.1);
+    }
+
+    .dot.error {
+      border-color: #ff3b30;
+      background: #ff3b30;
+      box-shadow: 0 0 10px rgba(255, 59, 48, 0.6);
+    }
+
+    /* Keypad Grid */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 100%;
+      justify-items: center;
+    }
+
+    .key {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 400;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: background 0.15s, transform 0.1s;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .key:active {
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(0.92);
+    }
+
+    .key .letters {
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      font-weight: 600;
+      margin-top: -2px;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .key.empty {
+      background: transparent;
+      border: none;
+      cursor: default;
+    }
+
+    .key.action {
+      font-size: 0.95rem;
+      background: transparent;
+      border: none;
+      font-weight: 500;
+    }
+
+    .key.action:active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .error-msg {
+      color: #fff;
+      background: rgba(255, 59, 48, 0.4);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-top: 15px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      border: 1px solid rgba(255, 59, 48, 0.5);
+    }
+
+    .error-msg.show {
+      opacity: 1;
+    }
+
+    /* Greeting Step Screen */
+    .greeting-container {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 20;
+      position: relative;
+      padding: 20px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Speech Bubble */
+    .speech-bubble {
+      position: relative;
+      background: #ffffff;
+      border-radius: 25px;
+      padding: 16px 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 28px rgba(230, 40, 90, 0.25);
+      border: 3px solid #ff85a2;
+      animation: bounceBubble 2s infinite ease-in-out;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 16px 14px 0;
+      border-style: solid;
+      border-color: #ff85a2 transparent;
+      display: block;
+      width: 0;
+    }
+
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 13px 11px 0;
+      border-style: solid;
+      border-color: #ffffff transparent;
+      display: block;
+      width: 0;
+      z-index: 1;
+    }
+
+    .speech-text {
+      color: #ff4b72;
+      font-weight: 600;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .kaomoji {
+      font-size: 1.1rem;
+      margin-top: 6px;
+      color: #ff6b8b;
+      display: block;
+    }
+
+    @keyframes bounceBubble {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    /* Floating / Embossed Photo Frame */
+    .photo-wrapper {
+      position: relative;
+      width: 210px;
+      height: 250px;
+      border-radius: 24px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 15px 35px rgba(220, 30, 80, 0.35),
+                  0 5px 15px rgba(255, 255, 255, 0.6) inset;
+      animation: floatPhoto 3.5s ease-in-out infinite;
+      margin-bottom: 25px;
+    }
+
+    .photo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 18px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    }
+
+    @keyframes floatPhoto {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-10px) rotate(1deg); }
+    }
+
+    /* Heart Next Button */
+    .heart-btn-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      background: none;
+      border: none;
+      outline: none;
+      transition: transform 0.2s;
+    }
+
+    .heart-btn-wrapper:hover {
+      transform: scale(1.1);
+    }
+
+    .heart-btn-wrapper:active {
+      transform: scale(0.95);
+    }
+
+    .heart-btn {
+      width: 75px;
+      height: 75px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      clip-path: path('M 37.5 67.5 C 37.5 67.5 7.5 45 7.5 22.5 C 7.5 10.5 18 3.75 28.5 3.75 C 34.5 3.75 37.5 9 37.5 9 C 37.5 9 40.5 3.75 46.5 3.75 C 57 3.75 67.5 10.5 67.5 22.5 C 67.5 45 37.5 67.5 37.5 67.5 Z');
+      filter: drop-shadow(0px 8px 15px rgba(255, 65, 108, 0.5));
+      animation: pulseHeart 1.5s infinite;
+    }
+
+    .heart-btn i {
+      color: #fff;
+      font-size: 1.3rem;
+      margin-top: -6px;
+    }
+
+    .btn-label {
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      letter-spacing: 1px;
+    }
+
+    @keyframes pulseHeart {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* Romantic Letter Card Success */
+    .success-card {
+      display: none;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 30px;
+      padding: 35px 25px;
+      width: 100%;
+      max-width: 460px;
+      max-height: 85vh;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      z-index: 20;
+      animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      position: relative;
+      overflow-y: auto;
+      border: 2px solid rgba(255, 182, 193, 0.5);
+    }
+
+    .success-card::-webkit-scrollbar {
+      width: 6px;
+    }
+    .success-card::-webkit-scrollbar-track {
+      background: rgba(255, 230, 235, 0.5);
+      border-radius: 10px;
+    }
+    .success-card::-webkit-scrollbar-thumb {
+      background: #ff758c;
+      border-radius: 10px;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .letter-header {
+      text-align: center;
+      margin-bottom: 15px;
+      border-bottom: 2px dashed #ffb6c1;
+      padding-bottom: 15px;
+    }
+
+    .letter-header i.fa-heart {
+      font-size: 40px;
+      color: #ff4b72;
+      animation: pulse 1.2s infinite;
+      margin-bottom: 8px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .letter-header h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.2rem;
+      color: #ff4b72;
+    }
+
+    .letter-photo-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .letter-photo-frame {
+      width: 100%;
+      max-width: 320px;
+      background: #fff;
+      padding: 10px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(255, 105, 135, 0.25);
+      border: 1px solid #ffe0e6;
+    }
+
+    .letter-photo-frame img {
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      display: block;
+    }
+
+    .letter-body {
+      color: #4a4a4a;
+      font-size: 0.92rem;
+      line-height: 1.8;
+      text-align: left;
+      white-space: pre-line;
+      padding: 0 5px;
+    }
+
+    .letter-footer {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 15px;
+      border-top: 2px dashed #ffb6c1;
+    }
+
+    .reset-btn {
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      border: none;
+      color: white;
+      padding: 10px 25px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
+      transition: transform 0.2s;
+    }
+
+    .reset-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Animated Hearts -->
+  <div class="bg-hearts" id="bgHearts"></div>
+
+  <!-- iOS Passcode Container -->
+  <div class="passcode-container" id="passcodeContainer">
+    <div class="lock-icon" id="lockIcon">
+      <i class="fa-solid fa-lock"></i>
+    </div>
+    
+    <h1 class="title">Happy 4th Mensive, Jeppy!</h1>
+    <p class="subtitle">Masukkan Kata Sandi</p>
+
+    <!-- 6 Dots -->
+    <div class="dots-container" id="dotsContainer">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+
+    <!-- Keypad Grid -->
+    <div class="keypad">
+      <button class="key" onclick="pressKey('1')">1</button>
+      <button class="key" onclick="pressKey('2')">2<span class="letters">ABC</span></button>
+      <button class="key" onclick="pressKey('3')">3<span class="letters">DEF</span></button>
+      
+      <button class="key" onclick="pressKey('4')">4<span class="letters">GHI</span></button>
+      <button class="key" onclick="pressKey('5')">5<span class="letters">JKL</span></button>
+      <button class="key" onclick="pressKey('6')">6<span class="letters">MNO</span></button>
+      
+      <button class="key" onclick="pressKey('7')">7<span class="letters">PQRS</span></button>
+      <button class="key" onclick="pressKey('8')">8<span class="letters">TUV</span></button>
+      <button class="key" onclick="pressKey('9')">9<span class="letters">WXYZ</span></button>
+      
+      <div class="key empty"></div>
+      <button class="key" onclick="pressKey('0')">0</button>
+      <button class="key action" onclick="deleteKey()">Hapus</button>
+    </div>
+
+    <div class="error-msg" id="errorMsg">Sandi Salah, Coba Lagi!</div>
+  </div>
+
+  <!-- Greeting Card Step -->
+  <div class="greeting-container" id="greetingContainer">
+    <div class="speech-bubble">
+      <div class="speech-text">
+        Haiii Jeppyyy! 🖐️✨<br>
+        Klik tombol di bawah ini yaa untuk menuju ke hadiah milikmuuu~ 🎁💖
+      </div>
+      <span class="kaomoji">(⁠≧⁠◡⁠≦⁠) ♡</span>
+    </div>
+
+    <div class="photo-wrapper">
+      <img src="https://i.pinimg.com/1200x/8f/95/ae/8f95ae72c997eab8a891ef2085239fef.jpg" alt="Jeppy">
+    </div>
+
+    <button class="heart-btn-wrapper" onclick="goToGift()">
+      <div class="heart-btn">
+        <i class="fa-solid fa-chevron-right"></i>
+      </div>
+      <span class="btn-label">NEXT</span>
+    </button>
+  </div>
+
+  <!-- Final Romantic Letter Card -->
+  <div class="success-card" id="successCard">
+    <div class="letter-header">
+      <i class="fa-solid fa-heart"></i>
+      <h2>Special Letter for You</h2>
+    </div>
+    
+    <div class="letter-photo-wrapper">
+      <div class="letter-photo-frame">
+        <img src="https://i.pinimg.com/736x/dd/9a/68/dd9a688d697763c22f3dfb563ecd7419.jpg" alt="Letters from me to you">
+      </div>
+    </div>
+
+    <div class="letter-body">
+To my big protector,
+
+Happy 4th mensive, Jeppy sayang. ♡
+
+Empat bulan ya, Jeppy. Aku masih suka senyum sendiri kalau ingat ternyata sekarang Aku punya Jeppy. Punya seseorang yang bisa aku cari ketika capek, seseorang yang bisa aku ganggu ketika kangen, dan seseorang yang bisa aku jadikan tempat pulang setiap kali aku merasa dunia terlalu ramai.
+
+Aku bersyukur banget kita dipertemukan.
+Kadang aku masih suka bertanya-tanya, kok bisa ya aku ketemu sama Jeppy? Dari sekian banyak orang, kenapa akhirnya hati aku bisa senyaman ini sama Jeppy? Tapi aku rasa aku engga perlu punya semua jawabannya. Aku cukup bersyukur karena sekarang Jeppy ada di sini, sama aku.
+
+Terima kasih ya, Jeppy.
+Terima kasih karena selalu ada buat aku. Terima kasih karena mau dengerin semua cerita aku, semua keluhan aku, semua hal kecil yang aku ceritakan meskipun kadang engga penting-penting banget. Aku tau, aku bisa banyak maunya, bisa manja, bisa clingy, bisa tiba-tiba butuh Jeppy, dan mungkin kadang agak merepotkan.
+
+Tapi Jeppy tetap ada.
+Dan itu berarti banyak banget buat aku.
+
+Aku suka rasanya bisa bergantung sama Jeppy. Rasanya tenang ketika tau aku punya Jeppy untuk dicari. Ketika aku bingung, aku bisa tanya Jeppy. Ketika aku capek, aku bisa datang ke Jeppy. Ketika aku sedih, aku bisa minta Jeppy buat nemenin. Bahkan kadang aku cuma ingin diperhatikan sedikit lebih lama sama Jeppy.
+
+Aku memang sesayang itu sama Jeppy.
+Aku suka kalau Jeppy yang menenangkan aku. Suka ketika Jeppy bilang semuanya akan baik-baik saja. Suka ketika Jeppy mengingatkan aku kalau aku engga perlu menghadapi semuanya sendirian.
+
+Entah kenapa, kalau sama Jeppy aku jadi gampang banget luluh.
+
+Aku bisa keras kepala sama banyak hal, tapi kalau sudah sama Jeppy rasanya aku cuma ingin nurut, dimanja, dijaga, dan disayang sama Jeppy. Aku nyaman ketika Jeppy mengambil alih hal-hal kecil saat aku sedang bingung. Aku nyaman ketika Jeppy mengarahkan aku. Aku nyaman ketika Jeppy membuat aku merasa kalau aku engga perlu selalu kuat.
+
+Karena kalau sama Jeppy, aku ingin boleh sedikit manja.
+
+Ingin boleh bergantung.
+Ingin boleh bilang, “Jeppy, aku capek.”
+Ingin boleh bilang, “Jeppy, sini temenin aku.”
+Ingin boleh minta dipeluk ketika Ata sedang nggak baik-baik saja.
+Dan yang paling aku suka adalah ketika Jeppy tetap menerima aku setelah melihat semua sisi itu.
+
+Jeppy sudah jadi rumah buat Ata.
+
+Rumah yang selalu ingin aku datangi lagi setelah hari yang panjang. Tempat aku bisa melepas semua yang aku simpan sendiri. Tempat aku bisa cerita tanpa takut dianggap terlalu banyak. Tempat aku bisa jadi kecil, manja, dan sedikit needy tanpa merasa harus malu.
+
+Aku cuma berharap Jeppy nggak pernah bosan sama sisi Ata yang seperti ini.
+Karena jujur, aku masih ingin terus bergantung sama Jeppy.
+Masih ingin mencari Jeppy ketika kangen.
+Masih ingin mengganggu Jeppy ketika butuh perhatian.
+Masih ingin mendengar suara Jeppy.
+Masih ingin cerita hal-hal random ke Jeppy.
+Masih ingin menjadi orang yang Jeppy cari ketika Jeppy juga sedang butuh tempat untuk pulang.
+
+Dan kalau Jeppy mengizinkan, aku ingin terus tinggal di tempat itu.
+Di samping Jeppy.
+
+Aku engga tau perjalanan kita ke depannya akan seperti apa. Tapi aku berharap kita tetap saling memilih. Kalau ada hari yang berat, semoga kita tetap mau saling genggam. Kalau ada salah paham, semoga kita tetap mau bicara. Kalau salah satu dari kita lelah, semoga yang lain bisa menjadi tempat untuk beristirahat.
+Aku juga ingin Jeppy tau kalau Jeppy engga harus selalu kuat di depan aku.
+
+Kalau Jeppy capek, sini sama aku.
+Kalau Jeppy ingin cerita, aku dengarkan.
+Kalau Jeppy ingin diam, aku temani.
+Kalau Jeppy butuh seseorang untuk bersandar, aku juga mau jadi tempat Jeppy.
+
+Jadi jangan cuma biarkan Ata bergantung sama Jeppy, ya?
+Sesekali, gantian Jeppy bergantung sama aku.
+Aku akan tetap di sini.
+
+Empat bulan ini mungkin baru sedikit dari perjalanan kita. Tapi aku sudah menyimpan begitu banyak rasa syukur di dalamnya.
+
+Terima kasih sudah datang.
+Terima kasih sudah tinggal.
+Terima kasih sudah sabar sama aku.
+Terima kasih sudah menjadi tempat aku pulang.
+
+Semoga kita masih bisa merayakan mensive berikutnya. Dan setelah itu, berikutnya lagi. Sampai nanti kita melihat ke belakang dan sadar kalau ternyata sudah banyak sekali waktu yang kita lewati bersama.
+
+Aku nggak minta semuanya selalu sempurna.
+Aku cuma ingin Jeppy tetap di sini.
+Tetap genggam aku.
+Tetap sayang sama aku.
+Tetap jadi tempat aku pulang.
+
+Dan kalau boleh sedikit egois...
+Aku ingin terus jadi milik Jeppy yang manja, yang suka mencari Jeppy, yang gampang luluh kalau Jeppy lembut sedikit, dan yang selalu merasa paling aman ketika ada di dekat Jeppy.
+
+Happy 4th mensive, my big protector.
+
+Aku sayang banget sama Jeppy.
+Please stay with me, yaaaaaa?
+Aku masih mau pulang ke Jeppy. ♡
+
+Love,
+Ata
+    </div>
+
+    <div class="letter-footer">
+      <button class="reset-btn" onclick="resetApp()">Kunci Kembali</button>
+    </div>
+  </div>
+
+  <script>
+    const CORRECT_CODE = "260526";
+    let currentCode = "";
+
+    const container = document.getElementById('passcodeContainer');
+    const greetingContainer = document.getElementById('greetingContainer');
+    const dotsContainer = document.getElementById('dotsContainer');
+    const dots = dotsContainer.querySelectorAll('.dot');
+    const errorMsg = document.getElementById('errorMsg');
+    const successCard = document.getElementById('successCard');
+    const lockIcon = document.getElementById('lockIcon');
+
+    function playTapSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.08);
+      } catch (e) {}
+    }
+
+    function pressKey(num) {
+      if (currentCode.length < 6) {
+        playTapSound();
+        currentCode += num;
+        updateDots();
+
+        if (currentCode.length === 6) {
+          setTimeout(checkPasscode, 150);
+        }
+      }
+    }
+
+    function deleteKey() {
+      if (currentCode.length > 0) {
+        playTapSound();
+        currentCode = currentCode.slice(0, -1);
+        updateDots();
+        errorMsg.classList.remove('show');
+      }
+    }
+
+    function updateDots() {
+      dots.forEach((dot, index) => {
+        if (index < currentCode.length) {
+          dot.classList.add('filled');
+        } else {
+          dot.classList.remove('filled');
+        }
+        dot.classList.remove('error');
+      });
+    }
+
+    function checkPasscode() {
+      if (currentCode === CORRECT_CODE) {
+        lockIcon.innerHTML = '<i class="fa-solid fa-lock-open"></i>';
+        container.style.opacity = '0';
+        container.style.transform = 'scale(0.8)';
+        
+        setTimeout(() => {
+          container.style.display = 'none';
+          greetingContainer.style.display = 'flex';
+        }, 300);
+
+      } else {
+        container.classList.add('shake');
+        dots.forEach(dot => dot.classList.add('error'));
+        errorMsg.classList.add('show');
+
+        setTimeout(() => {
+          container.classList.remove('shake');
+          currentCode = "";
+          updateDots();
+        }, 500);
+      }
+    }
+
+    function goToGift() {
+      greetingContainer.style.opacity = '0';
+      greetingContainer.style.transform = 'scale(0.8)';
+      greetingContainer.style.transition = 'all 0.3s ease';
+
+      setTimeout(() => {
+        greetingContainer.style.display = 'none';
+        successCard.style.display = 'block';
+        createHeartExplosion();
+      }, 300);
+    }
+
+    function resetApp() {
+      currentCode = "";
+      updateDots();
+      lockIcon.innerHTML = '<i class="fa-solid fa-lock"></i>';
+      errorMsg.classList.remove('show');
+      successCard.style.display = 'none';
+      greetingContainer.style.display = 'none';
+      greetingContainer.style.opacity = '1';
+      greetingContainer.style.transform = 'scale(1)';
+      container.style.display = 'flex';
+      setTimeout(() => {
+        container.style.opacity = '1';
+        container.style.transform = 'scale(1)';
+      }, 50);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (successCard.style.display === 'block' || greetingContainer.style.display === 'flex') return;
+      if (e.key >= '0' && e.key <= '9') {
+        pressKey(e.key);
+      } else if (e.key === 'Backspace') {
+        deleteKey();
+      }
+    });
+
+    function createBgHearts() {
+      const bgHearts = document.getElementById('bgHearts');
+      const heartIcons = ['fa-heart', 'fa-hand-holding-heart', 'fa-heart-pulse'];
+      
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('i');
+        const randomIcon = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+        heart.className = `fa-solid ${randomIcon} heart-bg`;
+        
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDuration = (Math.random() * 5 + 4) + 's';
+        heart.style.animationDelay = (Math.random() * 5) + 's';
+        heart.style.fontSize = (Math.random() * 20 + 12) + 'px';
+        
+        bgHearts.appendChild(heart);
+      }
+    }
+
+    function createHeartExplosion() {
+      for (let i = 0; i < 40; i++) {
+        const heart = document.createElement('i');
+        heart.className = 'fa-solid fa-heart';
+        heart.style.position = 'fixed';
+        heart.style.color = '#ff4b72';
+        heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        heart.style.left = '50%';
+        heart.style.top = '50%';
+        heart.style.zIndex = '100';
+        heart.style.pointerEvents = 'none';
+        
+        document.body.appendChild(heart);
+
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 280 + 120;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+
+        heart.animate([
+          { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
+        ], {
+          duration: Math.random() * 1000 + 800,
+          easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+          fill: 'forwards'
+        });
+
+        setTimeout(() => heart.remove(), 1800);
+      }
+    }
+
+    createBgHearts();
+  </script>
+</body>
+</html>
